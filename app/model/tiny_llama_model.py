@@ -50,13 +50,6 @@ class TinyLlamaModel:
 
         Returns:
             str: The extracted personalized text without the prompt
-
-        Example:
-            >>> prompt = "Personalize this horoscope:"
-            >>> generated = "Personalize this horoscope: <|assistant|> Hello John, today..."
-            >>> result = TinyLlamaModel._extract_personalized_text(generated, prompt)
-            >>> print(result)
-            "Hello John, today..."
         """
         if "<|assistant|>" in generated_text:
             response = generated_text.split("<|assistant|>")[-1].strip()
@@ -79,13 +72,6 @@ class TinyLlamaModel:
 
         Raises:
             Exception: If text generation fails or model is not properly initialized
-
-        Example:
-            >>> model = TinyLlamaModel()
-            >>> prompt = "Personalize this horoscope for Sarah: Today brings opportunities."
-            >>> result = model.generate_personalized_test(prompt)
-            >>> print(result)
-            "Hello Sarah, today brings wonderful opportunities specifically for you..."
         """
         result: List[Dict[str, Any]] = self.generator(
             prompt,

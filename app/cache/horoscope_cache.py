@@ -89,10 +89,6 @@ class HoroscopeCache:
 
         Returns:
             str: Unique cache key in format "birth_date_name_language"
-
-        Example:
-            >>> HoroscopeCache._generate_key("1995-01-15", "John Doe", "ENGLISH")
-            "1995-01-15_john doe_english"
         """
         return f"{birth_date}_{name.lower()}_{language.lower()}"
 
@@ -112,11 +108,6 @@ class HoroscopeCache:
 
         Returns:
             Optional[str]: Cached horoscope text if found and current, None otherwise
-
-        Example:
-            >>> cache = HoroscopeCache()
-            >>> horoscope = cache.get("1995-01-15", "John", "english")
-            >>> print(horoscope)  # Returns cached text or None
         """
         key = self._generate_key(birth_date, name, language)
 
@@ -150,10 +141,6 @@ class HoroscopeCache:
             name (str): User's name
             language (str): Response language
             horoscope (str): Personalized horoscope text to cache
-
-        Example:
-            >>> cache = HoroscopeCache()
-            >>> cache.put("1995-01-15", "John", "english", "Your horoscope for today...")
         """
         key = self._generate_key(birth_date, name, language)
         today = date.today().isoformat()
@@ -183,11 +170,6 @@ class HoroscopeCache:
 
         Returns:
             int: Number of stale entries that were removed
-
-        Example:
-            >>> cache = HoroscopeCache()
-            >>> removed_count = cache.clear_stale_entries()
-            >>> print(f"Removed {removed_count} stale entries")
         """
         today = date.today().isoformat()
 

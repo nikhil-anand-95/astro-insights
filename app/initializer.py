@@ -22,11 +22,6 @@ def init(app: FastAPI) -> None:
 
     Args:
         app (FastAPI): The FastAPI application instance to initialize
-
-    Example:
-        >>> from fastapi import FastAPI
-        >>> app = FastAPI()
-        >>> init(app)
     """
     init_routers(app)
     init_scheduled_tasks(app)
@@ -99,12 +94,6 @@ def clear_stale_horoscope_cache() -> None:
     It helps maintain cache efficiency and prevents memory bloat.
 
     The function logs the number of entries removed for monitoring purposes.
-
-    Example:
-        This function is typically called automatically by the scheduler,
-        but can also be called manually:
-        >>> clear_stale_horoscope_cache()
-        # Logs: "Cleared 15 stale horoscope cache entries"
     """
     logger.info("Clearing stale horoscope cache entries")
     cache = HoroscopeCache()

@@ -51,14 +51,6 @@ class ZodiacManager:
             KeyError: If the zodiac sign returned by the library is not found
                      in the ZodiacSignEnum
             ValueError: If the birth_date is invalid or cannot be processed
-
-        Example:
-            >>> from datetime import date
-            >>> manager = ZodiacManager()
-            >>> birth_date = date(1995, 1, 15)
-            >>> sign = manager.get_zodiac_sign(birth_date)
-            >>> print(sign)
-            ZodiacSignEnum.CAPRICORN
         """
         zodiac_sign: str = get_zodiac_sign(birth_date)
         return ZodiacSignEnum[zodiac_sign.upper()]

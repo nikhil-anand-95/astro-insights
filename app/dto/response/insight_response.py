@@ -20,15 +20,6 @@ class InsightResponse(BaseModel):
         zodiac (ZodiacSignEnum): The user's zodiac sign based on their birth date
         insight (str): Personalized horoscope text tailored for the user
         language (ResponseLanguageEnum): The language of the insight response
-
-    Example:
-        >>> response = InsightResponse(
-        ...     zodiac=ZodiacSignEnum.CAPRICORN,
-        ...     insight="Hello John, today brings new opportunities for growth...",
-        ...     language=ResponseLanguageEnum.ENGLISH,
-        ... )
-        >>> print(response.zodiac)
-        ZodiacSignEnum.CAPRICORN
     """
 
     zodiac: ZodiacSignEnum

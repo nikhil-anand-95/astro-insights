@@ -46,13 +46,6 @@ class HelsinkiTransalationModel:
         Raises:
             Exception: If translation fails or model is not properly initialized
             ValueError: If the input text is empty or invalid
-
-        Example:
-            >>> translator = HelsinkiTransalationModel()
-            >>> english_text = "Hello, how are you today?"
-            >>> hindi_text = translator.translate_to_hindi(english_text)
-            >>> print(hindi_text)
-            "नमस्ते, आज आप कैसे हैं?"
         """
         result: List[Dict[str, Any]] = self.translator(text)
         return result[0]["translation_text"]

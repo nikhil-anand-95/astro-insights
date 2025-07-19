@@ -42,23 +42,6 @@ def generate_insight(request: InsightRequest) -> JSONResponse:
     Raises:
         ValueError: When birth_date format is invalid
         Exception: For any other processing errors
-
-    Example:
-        Request:
-        {
-            "name": "John",
-            "birth_date": "1995-01-15",
-            "birth_time": "10:30",
-            "birth_place": "New York",
-            "language": "ENGLISH"
-        }
-
-        Response:
-        {
-            "zodiac": "CAPRICORN",
-            "insight": "Hello John, today brings...",
-            "language": "ENGLISH"
-        }
     """
     try:
         logger.info(msg=f"Received insight generation request for user {request.name}")

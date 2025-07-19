@@ -22,13 +22,6 @@ def health_check_head() -> Dict[str, str]:
         Dict[str, str]: A dictionary containing:
             - message (str): Service status message
             - author (str): Service author information
-
-    Example:
-        Response:
-        {
-            "message": "Astro Insights Service is running",
-            "author": "nikhil.anand"
-        }
     """
     return {"message": "Astro Insights Service is running", "author": "nikhil.anand"}
 
@@ -46,12 +39,5 @@ def health_check_get() -> Dict[str, str]:
         Dict[str, str]: A dictionary containing:
             - message (str): Service status message
             - author (str): Service author information
-
-    Example:
-        Response:
-        {
-            "message": "Astro Insights Service is running",
-            "author": "nikhil.anand"
-        }
     """
     return {"message": "Astro Insights Service is running", "author": "nikhil.anand"}

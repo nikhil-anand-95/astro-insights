@@ -55,12 +55,6 @@ class InsightManager:
 
         Returns:
             Optional[date]: Parsed date object if valid, None if invalid
-
-        Example:
-            >>> InsightManager._validate_date("1995-01-15")
-            datetime.date(1995, 1, 15)
-            >>> InsightManager._validate_date("invalid-date")
-            None
         """
         try:
             date_obj = parse(date_str)
@@ -89,18 +83,6 @@ class InsightManager:
 
         Raises:
             ValueError: If the birth_date format is invalid or cannot be parsed
-
-        Example:
-            >>> request = InsightRequest(
-            ...     name="John",
-            ...     birth_date="1995-01-15",
-            ...     birth_time="10:30",
-            ...     birth_place="New York",
-            ...     language=ResponseLanguageEnum.ENGLISH,
-            ... )
-            >>> response = manager.generate_astrological_insight(request)
-            >>> print(response.zodiac)
-            ZodiacSignEnum.CAPRICORN
         """
         dob: Optional[date] = self._validate_date(request.birth_date)
         if not dob:

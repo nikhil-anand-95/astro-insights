@@ -116,12 +116,6 @@ class HttpClient:
 
         Returns:
             Response: The HTTP response object
-
-        Example:
-            >>> client = HttpClient()
-            >>> response = client.get("https://api.example.com/data")
-            >>> print(response.status_code)
-            200
         """
         headers = self.__get_headers(headers=headers)
         return self.__execute(http_method="GET", url=url, payload=payload, headers=headers, timeout=timeout)
@@ -144,12 +138,6 @@ class HttpClient:
 
         Returns:
             Response: The HTTP response object
-
-        Example:
-            >>> client = HttpClient()
-            >>> response = client.post("https://api.example.com/data", payload='{"key": "value"}')
-            >>> print(response.status_code)
-            201
         """
         headers = self.__get_headers(headers=headers)
         return self.__execute(http_method="POST", url=url, payload=payload, headers=headers, timeout=timeout)
@@ -172,12 +160,6 @@ class HttpClient:
 
         Returns:
             Response: The HTTP response object
-
-        Example:
-            >>> client = HttpClient()
-            >>> response = client.put("https://api.example.com/data/1", payload='{"key": "updated_value"}')
-            >>> print(response.status_code)
-            200
         """
         headers = self.__get_headers(headers=headers)
         return self.__execute(http_method="PUT", url=url, payload=payload, headers=headers, timeout=timeout)

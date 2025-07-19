@@ -45,13 +45,6 @@ class GPT2Model:
 
         Returns:
             str: The extracted personalized text without the prompt
-
-        Example:
-            >>> prompt = "Personalize this horoscope for John:"
-            >>> generated = "Personalize this horoscope for John: Hello John, today..."
-            >>> result = GPT2Model._extract_personalized_text(generated, prompt)
-            >>> print(result)
-            "Hello John, today..."
         """
         return generated_text[len(prompt) :].strip() if len(generated_text) > len(prompt) else generated_text
 
@@ -71,13 +64,6 @@ class GPT2Model:
 
         Raises:
             Exception: If text generation fails or model is not properly initialized
-
-        Example:
-            >>> model = GPT2Model()
-            >>> prompt = "Personalize this horoscope for John: Today is a good day."
-            >>> result = model.generate_personalized_test(prompt)
-            >>> print(result)
-            "Hello John, today is indeed a wonderful day for you..."
         """
         result: List[Dict[str, Any]] = self.generator(
             prompt,

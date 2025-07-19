@@ -53,12 +53,6 @@ class HoroscopeManager:
             requests.exceptions.RequestException: If the HTTP request fails
             AttributeError: If the expected HTML structure is not found
             KeyError: If the zodiac sign is not found in the mapping
-
-        Example:
-            >>> manager = HoroscopeManager()
-            >>> horoscope = manager.get_horoscope(ZodiacSignEnum.ARIES)
-            >>> print(horoscope)
-            "Today brings new opportunities for Aries..."
         """
         webpage: Response = self.http_client.get(
             self.HOROSCOPE_WEBSITE_URL.format(ZODIAC_SIGN_TO_NUMBER_MAP[zodiac_sign])

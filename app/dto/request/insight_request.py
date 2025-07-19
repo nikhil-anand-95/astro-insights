@@ -24,17 +24,6 @@ class InsightRequest(BaseModel):
         birth_time (str): Birth time (currently not used in processing but collected for future features)
         birth_place (str): Birth place (currently not used in processing but collected for future features)
         language (Optional[ResponseLanguageEnum]): Preferred response language, defaults to English
-
-    Example:
-        >>> request = InsightRequest(
-        ...     name="John Doe",
-        ...     birth_date="1995-01-15",
-        ...     birth_time="10:30 AM",
-        ...     birth_place="New York, NY",
-        ...     language=ResponseLanguageEnum.ENGLISH,
-        ... )
-        >>> print(request.name)
-        "John Doe"
     """
 
     name: str
