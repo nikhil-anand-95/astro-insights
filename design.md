@@ -38,13 +38,40 @@ In a production environment with standardized infrastructure and resolved depend
 
 **How do you handle model loading and memory management?**
 
-Based on the codebase implementation:
+Based on the enhanced codebase implementation with configuration management:
+- **Configuration-Driven Loading**: Only enabled models are loaded based on `ModelConfigManager` settings
 - **Lazy Loading**: Models are instantiated only when the LlmManager is created, not at application startup
 - **Singleton Pattern**: The HoroscopeCache uses singleton pattern to ensure single instance across the application
 - **Pipeline Optimization**: Using Hugging Face pipelines with `torch_dtype="float32"` for memory efficiency
 - **Model Reuse**: Models are loaded once and reused across requests through the manager pattern
 - **Dictionary-based Management**: Models are stored in dictionaries (`model_dict`, `translator_dict`) for efficient access and management
-- **Memory Considerations**: Each model is loaded into memory once and shared across all requests, avoiding repeated loading overhead
+- **Memory Optimization**: Only enabled models consume memory, disabled models are not loaded
+- **Error Handling**: Failed model loading is logged and doesn't prevent other models from loading
+- **Memory Considerations**: Each enabled model is loaded into memory once and shared across all requests, avoiding repeated loading overhead
+
+**How does the Configuration Management System work?**
+
+The configuration system provides a structured approach to managing models and translators:
+
+**Configuration Structure:**
+- **`ModelConfig`**: Data class defining model type, enabled status, prompt, and description
+- **`TranslatorConfig`**: Data class defining translator type, enabled status, description, and supported languages
+- **`MODEL_CONFIGURATIONS`**: Dictionary mapping model enums to their configurations
+- **`TRANSLATOR_CONFIGURATIONS`**: Dictionary mapping translator enums to their configurations
+
+**Configuration Flow:**
+1. **Definition**: Models and translators are defined in `model_definitions.py` with their configurations
+2. **Management**: `ModelConfigManager` loads and manages these configurations
+3. **Filtering**: Only enabled models/translators are loaded by `LlmManager`
+4. **Runtime**: Models can be dynamically enabled/disabled without code changes
+5. **Extensibility**: New models can be added by updating configuration definitions
+
+**Benefits:**
+- **Resource Efficiency**: Only load models that are actually needed
+- **Environment Flexibility**: Different configurations for development vs production
+- **Easy Maintenance**: Centralized configuration management
+- **Type Safety**: Structured data classes prevent configuration errors
+- **Logging**: Clear logging of which models are loaded or failed to load
 
 ### Architecture Decisions
 
@@ -80,9 +107,10 @@ Web scraping was chosen over APIs for practical and technical reasons:
 
 **How does the layered architecture (resource -> manager -> model) benefit the system?**
 
-The three-tier architecture provides clear separation of concerns:
+The four-tier architecture provides clear separation of concerns:
 - **Resource Layer**: Handles HTTP requests/responses, input validation, and API documentation
 - **Manager Layer**: Contains business logic, orchestrates operations, and manages data flow
+- **Configuration Layer**: Manages model configurations, enabling/disabling, and centralized settings
 - **Model Layer**: Encapsulates AI models, external integrations, and data processing
 - **Benefits**: Improved maintainability, testability, scalability, and code reusability
 - **Loose Coupling**: Each layer can be modified independently without affecting others
@@ -208,13 +236,16 @@ Currently, the system has basic error handling without sophisticated retry mecha
 
 **How will you add more models? What changes will be needed in design?**
 
-Based on the current architecture, adding new models is straightforward due to the plug-and-play design:
+Based on the enhanced configuration-driven architecture, adding new models is even more streamlined:
 - **Enum Extension**: Add new model types to `LlmModelsEnum` in `constants/enum.py`
 - **Model Implementation**: Create new model classes in `app/model/` following the existing pattern (e.g., `ollama_model.py`)
-- **Manager Integration**: Add model instances to `model_dict` and prompts to `model_prompt_dict` in `LlmManager`
-- **Constants Addition**: Define model-specific constants in `llm_constants.py`
+- **Configuration Definition**: Add model configuration to `MODEL_CONFIGURATIONS` in `model_definitions.py`
+- **Constants Addition**: Define model-specific constants and prompts in `llm_constants.py`
 - **Interface Consistency**: Ensure new models implement the same `generate_personalized_test()` method interface
-- **Configuration**: Models can be selected via API parameters or configuration without code changes
+- **Factory Method**: Update `_create_model_instance()` method in `LlmManager` to handle the new model type
+- **Automatic Integration**: The configuration system automatically handles loading, enabling/disabling, and management
+- **Zero Code Changes**: Models can be enabled/disabled by simply changing the `enabled` flag in configuration
+- **Environment Flexibility**: Different model sets can be configured for different environments
 
 **How would you add more languages?**
 

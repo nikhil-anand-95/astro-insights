@@ -95,6 +95,7 @@ POST /v1/generate-insight
 app/
 ├── cache/              # Caching implementation
 ├── client/             # HTTP client for external APIs
+├── config/             # Model and system configuration
 ├── constants/          # Enums and constants
 ├── dto/               # Data transfer objects
 ├── manager/           # Business logic layer
@@ -102,6 +103,25 @@ app/
 ├── resource/          # API endpoints
 └── utils/             # Utility functions
 ```
+
+### Key Components
+
+#### Configuration Layer (`app/config/`)
+- **`model_config.py`**: Data classes for model and translator configurations
+- **`model_definitions.py`**: Centralized definitions of all available models and translators
+- **`model_config_manager.py`**: Manager for dynamic model enabling/disabling
+
+#### Business Logic Layer (`app/manager/`)
+- **`llm_manager.py`**: Enhanced with configuration-driven model loading
+- **`model_config_manager.py`**: Handles model configuration management
+- **`insight_manager.py`**: Orchestrates the insight generation process
+- **`horoscope_manager.py`**: Manages horoscope fetching and caching
+- **`zodiac_manager.py`**: Handles zodiac sign determination
+
+#### Model Layer (`app/model/`)
+- **`tiny_llama_model.py`**: TinyLlama implementation for text personalization
+- **`gpt_2_model.py`**: GPT-2 implementation (configurable)
+- **`helsinki_transalation_model.py`**: Helsinki-NLP translation model
 
 ## Architecture
 
