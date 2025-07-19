@@ -1,0 +1,21 @@
+# Set the maximum line length.
+line-length = 120
+
+[lint]
+# Add the `line-too-long` rule to the enforced rule set. By default, Ruff omits rules that
+# overlap with the use of a formatter, like Black, but we can override this behavior by
+# explicitly adding the rule.
+extend-select = ["E501"]
+
+# select = []
+# ignore = []
+
+#extend-safe-fixes = ["F601"]
+#extend-unsafe-fixes = ["UP034"]
+
+
+[format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+docstring-code-line-length = 120
