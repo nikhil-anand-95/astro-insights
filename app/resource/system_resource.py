@@ -4,6 +4,7 @@ Created at: 19/07/25
 """
 
 from typing import Dict
+
 from fastapi import APIRouter
 
 router = APIRouter()

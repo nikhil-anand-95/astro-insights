@@ -3,14 +3,11 @@ Author: nikhil.anand
 Created at: 19/07/25
 """
 
-from typing import List, Dict, Any
-from transformers import pipeline, Pipeline
-from app.constants.llm_constants import (
-    GPT2_MODEL_MAX_NEW_TOKENS,
-    GPT2_MODEL,
-    GPT2_MODEL_DO_SAMPLE,
-    GPT2_MODEL_TEMPERATURE,
-)
+from typing import Any, Dict, List
+
+from transformers import Pipeline, pipeline
+
+from app.constants.llm_constants import GPT2_MODEL, GPT2_MODEL_DO_SAMPLE, GPT2_MODEL_MAX_NEW_TOKENS
 
 
 class GPT2Model:

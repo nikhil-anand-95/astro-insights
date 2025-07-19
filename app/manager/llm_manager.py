@@ -3,10 +3,10 @@ Author: nikhil.anand
 Created at: 19/07/25
 """
 
-from typing import Dict, Union
+from fastapi.logger import logger
 
 from app.constants.enum import LlmModelsEnum, ResponseLanguageEnum, TranslatorModelsEnum
-from app.constants.llm_constants import GPT2_MODEL_PERSONALIZATION_PROMPT, TINY_LLAMA_MODEL_PERSONALIZATION_PROMPT
+from app.manager.model_config_manager import ModelConfigManager
 from app.model.gpt_2_model import GPT2Model
 from app.model.helsinki_transalation_model import HelsinkiTransalationModel
 from app.model.tiny_llama_model import TinyLlamaModel
@@ -18,36 +18,113 @@ class LlmManager:
 
     This class manages different LLM models for personalizing horoscope content
     and handles translation services. It provides a unified interface for
-    text generation and language translation operations with configurable
-    translation models.
+    text generation and language translation operations with configuration-driven
+    model management.
 
     Attributes:
-        model_dict (Dict[LlmModelsEnum, Union[TinyLlamaModel, GPT2Model]]):
-            Dictionary mapping model enums to model instances
-        model_prompt_dict (Dict[LlmModelsEnum, str]):
-            Dictionary mapping model enums to their specific prompts
-        translator_dict (Dict[TranslatorModelsEnum, HelsinkiTransalationModel]):
-            Dictionary mapping translator enums to translator instances
+        config_manager (ModelConfigManager): Configuration manager for models and translators
+        model_dict (dict): Dictionary mapping model enums to loaded model instances
+        model_prompt_dict (dict): Dictionary mapping model enums to their specific prompts
+        translator_dict (dict): Dictionary mapping translator enums to loaded translator instances
     """
 
     def __init__(self) -> None:
         """
-        Initialize the LlmManager with available models and translation services.
+        Initialize the LlmManager with configuration-driven model loading.
 
-        Sets up the available LLM models (TinyLlama and GPT2), their corresponding
-        prompts, and the Helsinki translation model for language conversion.
+        Loads only the enabled models and translators based on configuration settings,
+        providing dynamic model management with enabled/disabled flags.
         """
-        self.model_dict: Dict[LlmModelsEnum, Union[TinyLlamaModel, GPT2Model]] = {
-            LlmModelsEnum.TINY_LLAMA: TinyLlamaModel(),
-            LlmModelsEnum.GPT2: GPT2Model(),
+        self.config_manager = ModelConfigManager()
+        self.model_dict = self._load_enabled_models()
+        self.model_prompt_dict = self._load_enabled_prompts()
+        self.translator_dict = self._load_enabled_translators()
+
+    def _load_enabled_models(self) -> dict:
+        """
+        Load only enabled models based on configuration.
+
+        Returns:
+            dict: Dictionary of loaded model instances
+        """
+        enabled_models = {}
+        for config in self.config_manager.get_enabled_models():
+            try:
+                model_instance = self._create_model_instance(config.model_type)
+                enabled_models[config.model_type] = model_instance
+                logger.info(f"Successfully loaded model: {config.model_type.value}")
+            except Exception as e:
+                logger.error(f"Failed to load model {config.model_type.value}: {e}")
+        return enabled_models
+
+    def _load_enabled_prompts(self) -> dict:
+        """
+        Load prompts for enabled models based on configuration.
+
+        Returns:
+            dict: Dictionary mapping model types to their prompts
+        """
+        return {config.model_type: config.prompt for config in self.config_manager.get_enabled_models()}
+
+    def _load_enabled_translators(self) -> dict:
+        """
+        Load only the enabled translators based on configuration.
+
+        Returns:
+            dict: Dictionary of loaded translator instances
+        """
+        enabled_translators = {}
+        for config in self.config_manager.get_enabled_translators():
+            try:
+                translator_instance = self._create_translator_instance(config.translator_type)
+                enabled_translators[config.translator_type] = translator_instance
+                logger.info(f"Successfully loaded translator: {config.translator_type.value}")
+            except Exception as e:
+                logger.error(f"Failed to load translator {config.translator_type.value}: {e}")
+        return enabled_translators
+
+    @staticmethod
+    def _create_model_instance(model_type: LlmModelsEnum):
+        """
+        Create a model instance based on the model type.
+
+        Args:
+            model_type (LlmModelsEnum): The type of model to create
+
+        Returns:
+            The created model instance
+
+        Raises:
+            KeyError: If the model type is not supported
+        """
+        model_mapping = {
+            LlmModelsEnum.TINY_LLAMA: TinyLlamaModel,
+            LlmModelsEnum.GPT2: GPT2Model,
         }
-        self.model_prompt_dict: Dict[LlmModelsEnum, str] = {
-            LlmModelsEnum.TINY_LLAMA: TINY_LLAMA_MODEL_PERSONALIZATION_PROMPT,
-            LlmModelsEnum.GPT2: GPT2_MODEL_PERSONALIZATION_PROMPT,
+        if model_type not in model_mapping:
+            raise KeyError(f"Unsupported model type: {model_type.value}")
+        return model_mapping[model_type]()
+
+    @staticmethod
+    def _create_translator_instance(translator_type: TranslatorModelsEnum):
+        """
+        Create a translator instance based on the translator type.
+
+        Args:
+            translator_type (TranslatorModelsEnum): The type of translator to create
+
+        Returns:
+            The created translator instance
+
+        Raises:
+            KeyError: If the translator type is not supported
+        """
+        translator_mapping = {
+            TranslatorModelsEnum.HELSINKI: HelsinkiTransalationModel,
         }
-        self.translator_dict: Dict[TranslatorModelsEnum, HelsinkiTransalationModel] = {
-            TranslatorModelsEnum.HELSINKI: HelsinkiTransalationModel(),
-        }
+        if translator_type not in translator_mapping:
+            raise KeyError(f"Unsupported translator type: {translator_type.value}")
+        return translator_mapping[translator_type]()
 
     @staticmethod
     def _clean_response(text: str) -> str:
@@ -62,10 +139,6 @@ class LlmManager:
 
         Returns:
             str: Cleaned and normalized text
-
-        Example:
-            >>> LlmManager._clean_response("Hello\\nJohn,\\n\\nBest wishes,")
-            "Hello John,"
         """
         # Replace newlines with spaces
         cleaned = text.replace("\\n", " ").replace("\n", " ")
@@ -109,27 +182,14 @@ class LlmManager:
         Raises:
             KeyError: If the specified model or translator is not available
             Exception: If text generation or translation fails
-
-        Example:
-            >>> manager = LlmManager()
-            >>> horoscope = "Today is a good day for new beginnings."
-            >>> personalized = manager.personalize_horoscope(
-            ...     horoscope=horoscope,
-            ...     name="John",
-            ...     model=LlmModelsEnum.TINY_LLAMA,
-            ...     language=ResponseLanguageEnum.HINDI,
-            ...     translator=TranslatorModelsEnum.HELSINKI,
-            ... )
-            >>> print(personalized)
-            "जॉन, आज नई शुरुआत के लिए एक अच्छा दिन है..."
         """
-        prompt: str = self.model_prompt_dict[model].format(horoscope=horoscope, name=name)
-        llm_model: Union[TinyLlamaModel, GPT2Model] = self.model_dict[model]
-        personalized_horoscope: str = llm_model.generate_personalized_test(prompt)
+        prompt = self.model_prompt_dict[model].format(horoscope=horoscope, name=name)
+        llm_model = self.model_dict[model]
+        personalized_horoscope = llm_model.generate_personalized_test(prompt)
         personalized_horoscope = self._clean_response(personalized_horoscope)
 
         if language == ResponseLanguageEnum.HINDI:
-            translation_model: HelsinkiTransalationModel = self.translator_dict[translator]
+            translation_model = self.translator_dict[translator]
             personalized_horoscope = translation_model.translate_to_hindi(personalized_horoscope)
 
         return personalized_horoscope
