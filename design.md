@@ -2,6 +2,11 @@
 
 ### Models Used
 
+**Technical Compatibility Considerations:**
+
+Due to compatibility constraints with the current development environment (macOS M1 architecture), certain advanced translation models such as IndicTrans2 and NLLB present integration challenges with the latest PyTorch versions. The current implementation requires safetensors compatibility, which limits the selection of available models for this demonstration. Helsinki-NLP was chosen as it provides stable performance across different hardware architectures while maintaining the required functionality for the proof-of-concept implementation.
+In a production environment with standardized infrastructure and resolved dependency compatibility, more sophisticated translation models like IndicTrans2 could be integrated to enhance translation quality for Indian languages.
+
 **Why did you choose TinyLlama and GPT-2 for personalization?**
 
 TinyLlama and GPT-2 are small size models available without any authentication requirements for local use. While they are not the best performing models available, they accomplish the personalization task decently on local systems using minimal resources. However, for production cases where we have large machines with GPU support, we can scale up to use larger models like those available through Ollama.
@@ -29,12 +34,6 @@ The primary trade-offs are model size, latency & cost versus performance:
 **Why Helsinki-NLP for translation instead of other options?**
 
 Helsinki-NLP provides reliable English to Hindi translation capabilities with good performance for our horoscope personalization use case. It offers a good balance between translation quality and resource requirements, making it suitable for local deployment without requiring specialized infrastructure or authentication.
-
-**Technical Compatibility Considerations:**
-
-Due to compatibility constraints with the current development environment (macOS M1 architecture), certain advanced translation models such as IndicTrans2 and NLLB present integration challenges with the latest PyTorch versions. The current implementation requires safetensors compatibility, which limits the selection of available models for this demonstration. Helsinki-NLP was chosen as it provides stable performance across different hardware architectures while maintaining the required functionality for the proof-of-concept implementation.
-
-In a production environment with standardized infrastructure and resolved dependency compatibility, more sophisticated translation models like IndicTrans2 could be integrated to enhance translation quality for Indian languages.
 
 **How do you handle model loading and memory management?**
 
@@ -250,7 +249,7 @@ Based on the enhanced configuration-driven architecture, adding new models is ev
 **How would you add more languages?**
 
 The current translation architecture supports easy language expansion:
-- **Enum Extension**: Add new languages to `ResponseLanguageEnum` (e.g., `SPANISH = "es"`, `FRENCH = "fr"`)
+- **Enum Extension**: Add new languages to `ResponseLanguageEnum` (e.g., `BENGALI = "be"`, `TAMIL = "ta"`)
 - **Translator Models**: Add new translation models to `TranslatorModelsEnum` and implement corresponding model classes
 - **Model Integration**: Extend `translator_dict` in `LlmManager` with new language-specific translators
 - **API Support**: The existing API structure already supports language selection via the `language` parameter
@@ -265,16 +264,6 @@ Based on the current structure, several features can be easily integrated:
 - **Personalized Predictions**: Enhance AI prompts to include specific life areas (career, love, health)
 - **Astrological Events**: Integrate astronomical data for eclipses, retrogrades, and planetary transits
 - **Custom Insights**: Use existing personalization framework for specific user preferences
-
-**How would you implement user authentication?**
-
-User authentication can be added with minimal changes to the existing architecture:
-- **JWT Integration**: Add FastAPI JWT middleware for token-based authentication
-- **User Model**: Create user data models extending the existing DTO pattern
-- **Cache Enhancement**: Replace name-based caching with user ID-based caching for better security
-- **Database Layer**: Add user management database (currently the system is stateless)
-- **API Protection**: Secure endpoints using FastAPI dependency injection for authentication
-- **Session Management**: Implement user sessions while maintaining the stateless request processing
 
 **What analytics/metrics would be valuable?**
 
